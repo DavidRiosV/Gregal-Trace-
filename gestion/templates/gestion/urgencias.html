@@ -1,0 +1,68 @@
+{% extends "gestion/principal.html" %}
+
+{% block titulo %}Urgencias · Gregal Trace{% endblock %}
+
+{% block contenido %}
+<h1 class="titulo-pantalla">Nueva urgencia</h1>
+<p class="subtitulo-pantalla">Para trabajos que aún no están dados de alta</p>
+
+<section class="panel">
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+
+        <div class="campo">
+            <label for="{{ formulario.nombre.id_for_label }}">{{ formulario.nombre.label }}</label>
+            <div class="entrada{% if formulario.nombre.errors %} entrada--error{% endif %}">
+                <input type="text" name="{{ formulario.nombre.html_name }}" id="{{ formulario.nombre.id_for_label }}"
+                       value="{{ formulario.nombre.value|default_if_none:'' }}"
+                       maxlength="{{ formulario.nombre.field.max_length }}"
+                       placeholder="Ej.: Fuga en C/ Mayor 12" required>
+            </div>
+            {% for error in formulario.nombre.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="campo">
+            <label for="{{ formulario.tipo_destino.id_for_label }}">{{ formulario.tipo_destino.label }}</label>
+            <div class="entrada{% if formulario.tipo_destino.errors %} entrada--error{% endif %}">
+                {{ formulario.tipo_destino }}
+            </div>
+            {% for error in formulario.tipo_destino.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="campo">
+            <label for="{{ formulario.descripcion.id_for_label }}">{{ formulario.descripcion.label }}</label>
+            <div class="entrada">
+                <textarea name="{{ formulario.descripcion.html_name }}" id="{{ formulario.descripcion.id_for_label }}"
+                          rows="3" placeholder="Qué ha pasado y qué hay que hacer">{{ formulario.descripcion.value|default_if_none:'' }}</textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="boton-principal">Crear urgencia</button>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Urgencias abiertas</h2>
+    <div class="proyectos">
+        {% for urgencia in urgencias %}
+            <div class="proyecto">
+                <div class="proyecto__contenido">
+                    <h2 class="proyecto__titulo">{{ urgencia.nombre }}</h2>
+                    <p class="proyecto__subtitulo">{{ urgencia.get_tipo_destino_display }}</p>
+                    <p class="proyecto__autor">
+                        Creada por
+                        <strong>{{ urgencia.creado_por.get_full_name|default:urgencia.creado_por.username|default:"usuario eliminado" }}</strong>
+                        el {{ urgencia.fecha_inicio|date:"d/m/Y" }}
+                    </p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="vacio">No hay urgencias abiertas.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<div class="acciones-pie">
+    <a class="boton-volver" href="{% url 'index' %}">← Volver al inicio</a>
+</div>
+{% endblock %}

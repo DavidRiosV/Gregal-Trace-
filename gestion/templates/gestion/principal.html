@@ -14,6 +14,14 @@
     {% include "gestion/cabecera.html" %}
 
     <main class="contenido">
+        {% if messages %}
+            <ul class="avisos">
+                {% for message in messages %}
+                    <li class="aviso aviso--{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% block contenido %}{% endblock %}
     </main>
 
@@ -21,6 +29,6 @@
         {% include "gestion/pie.html" %}
     {% endblock %}
 
-    <script src="{% static 'gestion/js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

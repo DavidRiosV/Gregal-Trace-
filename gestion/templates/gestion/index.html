@@ -1,4 +1,5 @@
 {% extends "gestion/principal.html" %}
+{% load static %}
 
 {% block titulo %}Inicio · Gregal Trace{% endblock %}
 
@@ -6,21 +7,18 @@
 <h1 class="titulo-pantalla">Hola, {{ user.first_name|default:user.username }}</h1>
 
 <div class="categorias">
-    <div class="categoria">
+    {% for slug, tipo in tipos.items %}
+        <a class="categoria" href="{% url 'lista_proyectos' slug %}">
+            <h2 class="categoria__titulo">{{ tipo.titulo }}</h2>
+            <div class="categoria__imagen">
+                <img src="{% static tipo.imagen %}" alt="">
+            </div>
+        </a>
+    {% endfor %}
+
+    <a class="categoria categoria--urgencia" href="{% url 'urgencias' %}">
         <h2 class="categoria__titulo">Urgencias</h2>
-        <div class="categoria__imagen"><span>Área de imagen</span></div>
-    </div>
-    <div class="categoria">
-        <h2 class="categoria__titulo">Obras</h2>
-        <div class="categoria__imagen"><span>Área de imagen</span></div>
-    </div>
-    <div class="categoria">
-        <h2 class="categoria__titulo">Intervenciones</h2>
-        <div class="categoria__imagen"><span>Área de imagen</span></div>
-    </div>
-    <div class="categoria">
-        <h2 class="categoria__titulo">Mantenimientos</h2>
-        <div class="categoria__imagen"><span>Área de imagen</span></div>
-    </div>
+        <div class="categoria__imagen"><span>Crear un trabajo nuevo</span></div>
+    </a>
 </div>
 {% endblock %}

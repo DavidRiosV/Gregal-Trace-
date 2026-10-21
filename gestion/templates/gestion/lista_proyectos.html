@@ -1,0 +1,33 @@
+{% extends "gestion/principal.html" %}
+
+{% block titulo %}{{ titulo }} · Gregal Trace{% endblock %}
+
+{% block contenido %}
+<h1 class="titulo-pantalla">Elegir proyecto</h1>
+<p class="subtitulo-pantalla">{{ titulo }}</p>
+
+{% include "gestion/buscador.html" with texto_buscador="Buscar proyectos" %}
+
+<div class="proyectos">
+    {% for proyecto in proyectos %}
+        <div class="proyecto">
+            <div class="proyecto__contenido">
+                <h2 class="proyecto__titulo">{{ proyecto.nombre }}</h2>
+                <p class="proyecto__subtitulo">Desde el {{ proyecto.fecha_inicio|date:"d/m/Y" }}</p>
+            </div>
+        </div>
+    {% empty %}
+        <p class="vacio">
+            {% if busqueda %}
+                No hay proyectos que coincidan con «{{ busqueda }}».
+            {% else %}
+                No hay proyectos abiertos en {{ titulo|lower }}.
+            {% endif %}
+        </p>
+    {% endfor %}
+</div>
+
+<div class="acciones-pie">
+    <a class="boton-volver" href="{% url 'index' %}">← Volver al inicio</a>
+</div>
+{% endblock %}
