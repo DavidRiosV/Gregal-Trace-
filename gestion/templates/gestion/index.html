@@ -1,38 +1,26 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio · Gregal Trace</title>
-    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
-</head>
-<body>
-    <header class="cabecera">
-        <a class="cabecera__marca" href="{% url 'index' %}">Gregal Trace</a>
-        <div class="cabecera__usuario">
-            <span>{{ user.get_full_name|default:user.username }}</span>
-            <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="boton boton--salir">Salir</button>
-            </form>
-        </div>
-    </header>
+{% extends "gestion/principal.html" %}
 
-    <main>
-        <p class="subtitulo">Inicio</p>
-        <h1 class="titulo">¿Dónde vas a trabajar hoy?</h1>
+{% block titulo %}Inicio · Gregal Trace{% endblock %}
 
-        <ul class="tarjetas">
-            <li><span class="tarjeta tarjeta--urgencia">Urgencias</span></li>
-            <li><span class="tarjeta">Obras</span></li>
-            <li><span class="tarjeta">Intervenciones</span></li>
-            <li><span class="tarjeta">Mantenimientos</span></li>
-        </ul>
-    </main>
+{% block contenido %}
+<h1 class="titulo-pantalla">Hola, {{ user.first_name|default:user.username }}</h1>
 
-    <footer class="pie">
-        <p>Gregal Trace · Instalaciones Gregal</p>
-    </footer>
-</body>
-</html>
+<div class="categorias">
+    <div class="categoria">
+        <h2 class="categoria__titulo">Urgencias</h2>
+        <div class="categoria__imagen"><span>Área de imagen</span></div>
+    </div>
+    <div class="categoria">
+        <h2 class="categoria__titulo">Obras</h2>
+        <div class="categoria__imagen"><span>Área de imagen</span></div>
+    </div>
+    <div class="categoria">
+        <h2 class="categoria__titulo">Intervenciones</h2>
+        <div class="categoria__imagen"><span>Área de imagen</span></div>
+    </div>
+    <div class="categoria">
+        <h2 class="categoria__titulo">Mantenimientos</h2>
+        <div class="categoria__imagen"><span>Área de imagen</span></div>
+    </div>
+</div>
+{% endblock %}

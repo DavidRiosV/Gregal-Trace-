@@ -1,70 +1,53 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesión · Gregal Trace</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
-</head>
-<body class="pagina-login">
-    <header class="cabecera">
-        <div class="cabecera__marca">
-            <span class="cabecera__sub">Plataforma de acceso</span>
-            <span class="cabecera__nombre">Gregal Trace</span>
-        </div>
-        <img class="cabecera__logo" src="{% static 'img/logo.png' %}" alt="Logo de Gregal">
-    </header>
+{% extends "gestion/principal.html" %}
 
-    <main class="contenido">
-        <section class="tarjeta-login">
-            <div class="tarjeta-login__bienvenida">
-                <h1>Bienvenido</h1>
-                <p>Introduce tus datos para acceder a tu cuenta</p>
+{% block titulo %}Iniciar sesión · Gregal Trace{% endblock %}
+
+{% block clase_body %}pagina-login{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-login">
+    <div class="tarjeta-login__bienvenida">
+        <h1>Bienvenido</h1>
+        <p>Introduce tus datos para acceder a tu cuenta</p>
+    </div>
+
+    <form method="post" action="{% url 'login' %}" class="formulario">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        {% if form.errors %}
+            <div class="error-formulario">Usuario o contraseña incorrectos.</div>
+        {% endif %}
+
+        <div class="campo">
+            <label for="id_username">Nombre de Usuario</label>
+            <div class="entrada">
+                <input type="text" name="username" id="id_username" placeholder="Pablo Perez"
+                       value="{{ form.username.value|default_if_none:'' }}"
+                       autocomplete="username" autofocus required>
             </div>
+        </div>
 
-            <form method="post" action="{% url 'login' %}" class="formulario">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next }}">
+        <div class="campo">
+            <label for="id_password">Contraseña</label>
+            <div class="entrada">
+                <input type="password" name="password" id="id_password"
+                       placeholder="Introduce tu contraseña"
+                       autocomplete="current-password" required>
+                <button type="button" class="entrada__ojo" data-mostrar-contrasena="id_password"
+                        aria-label="Mostrar contraseña">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
 
-                {% if form.errors %}
-                    <div class="error-formulario">Usuario o contraseña incorrectos.</div>
-                {% endif %}
+        <button type="submit" class="boton-principal">Iniciar sesión</button>
+    </form>
+</section>
+{% endblock %}
 
-                <div class="campo">
-                    <label for="id_username">Nombre de Usuario</label>
-                    <div class="entrada">
-                        <input type="text" name="username" id="id_username" placeholder="Pablo Perez"
-                               value="{{ form.username.value|default_if_none:'' }}"
-                               autocomplete="username" autofocus required>
-                    </div>
-                </div>
-
-                <div class="campo">
-                    <label for="id_password">Contraseña</label>
-                    <div class="entrada">
-                        <input type="password" name="password" id="id_password"
-                               placeholder="Introduce tu contraseña"
-                               autocomplete="current-password" required>
-                        <button type="button" class="entrada__ojo" data-mostrar-contrasena="id_password"
-                                aria-label="Mostrar contraseña">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <button type="submit" class="boton-principal">Iniciar sesión</button>
-            </form>
-        </section>
-    </main>
-
-    <script src="{% static 'gestion/js/main.js' %}"></script>
-</body>
-</html>
+{% block pie %}{% endblock %}

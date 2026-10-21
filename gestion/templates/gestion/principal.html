@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Gregal Trace{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body class="{% block clase_body %}{% endblock %}">
+    {% include "gestion/cabecera.html" %}
+
+    <main class="contenido">
+        {% block contenido %}{% endblock %}
+    </main>
+
+    {% block pie %}
+        {% include "gestion/pie.html" %}
+    {% endblock %}
+
+    <script src="{% static 'gestion/js/main.js' %}"></script>
+</body>
+</html>

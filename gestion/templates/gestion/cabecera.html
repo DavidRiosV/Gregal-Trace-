@@ -1,0 +1,20 @@
+{% load static %}
+<header class="cabecera">
+    <a class="cabecera__marca" href="{% url 'index' %}">
+        {% if not user.is_authenticated %}
+            <span class="cabecera__sub">Plataforma de acceso</span>
+        {% endif %}
+        <span class="cabecera__nombre">Gregal Trace</span>
+    </a>
+
+    <div class="cabecera__derecha">
+        {% if user.is_authenticated %}
+            <span class="cabecera__usuario">{{ user.get_full_name|default:user.username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="boton-salir">Salir</button>
+            </form>
+        {% endif %}
+        <img class="cabecera__logo" src="{% static 'img/logo.png' %}" alt="Logo de Gregal">
+    </div>
+</header>
