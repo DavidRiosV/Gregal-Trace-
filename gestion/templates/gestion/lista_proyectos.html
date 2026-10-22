@@ -8,20 +8,34 @@
 
 {% include "gestion/buscador.html" with texto_buscador="Buscar proyectos" %}
 
+<nav class="filtros-estado" aria-label="Filtrar por estado">
+    <a href="?estado=PRO{% if busqueda %}&q={{ busqueda|urlencode }}{% endif %}"
+       class="filtro{% if estado_actual == 'PRO' %} filtro--activo{% endif %}">En proceso</a>
+    <a href="?estado=TER{% if busqueda %}&q={{ busqueda|urlencode }}{% endif %}"
+       class="filtro{% if estado_actual == 'TER' %} filtro--activo{% endif %}">Terminados</a>
+    <a href="?estado=todos{% if busqueda %}&q={{ busqueda|urlencode }}{% endif %}"
+       class="filtro{% if estado_actual == 'todos' %} filtro--activo{% endif %}">Todos</a>
+</nav>
+
 <div class="proyectos">
     {% for proyecto in proyectos %}
-        <div class="proyecto">
+        <a class="proyecto" href="{% url 'detalle_proyecto' proyecto.pk %}">
             <div class="proyecto__contenido">
                 <h2 class="proyecto__titulo">{{ proyecto.nombre }}</h2>
-                <p class="proyecto__subtitulo">Desde el {{ proyecto.fecha_inicio|date:"d/m/Y" }}</p>
+                <p class="proyecto__subtitulo">
+                    {{ proyecto.fecha_inicio|date:"d/m/Y" }}{% if proyecto.fecha_fin %} – {{ proyecto.fecha_fin|date:"d/m/Y" }}{% endif %}
+                </p>
+                {% include "gestion/estado.html" %}
             </div>
-        </div>
+        </a>
     {% empty %}
         <p class="vacio">
             {% if busqueda %}
                 No hay proyectos que coincidan con «{{ busqueda }}».
             {% else %}
-                No hay proyectos abiertos en {{ titulo|lower }}.
+                {% if estado_actual == 'TER' %}No hay proyectos terminados en {{ titulo|lower }}.
+                {% elif estado_actual == 'PRO' %}No hay proyectos en proceso en {{ titulo|lower }}.
+                {% else %}No hay proyectos en {{ titulo|lower }}.{% endif %}
             {% endif %}
         </p>
     {% endfor %}

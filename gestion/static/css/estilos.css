@@ -623,3 +623,50 @@ h1, h2, p { margin: 0; }
 @media (max-width: 640px) {
     .boton-volver { width: 100%; }
 }
+
+/* ---------- Detalle del proyecto ---------- */
+.ficha { width: 100%; }
+.ficha__datos { color: var(--texto-secundario); }
+.formulario--consumo .boton-principal { align-self: end; }
+.entrada input[type="date"] { cursor: pointer; }
+
+/* ---------- Estado del proyecto: en proceso / terminado ---------- */
+.estado--proceso { background: var(--ambar); color: var(--texto); }
+.estado--terminado { background: var(--verde-oscuro); color: var(--blanco); }
+
+.filtros-estado {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.filtro {
+    padding: 8px 18px;
+    border: 1px solid var(--verde-oscuro);
+    border-radius: 999px;
+    color: var(--verde-oscuro);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.filtro:hover { background: var(--verde-claro); }
+.filtro--activo { background: var(--verde-oscuro); color: var(--blanco); }
+.filtro--activo:hover { background: var(--verde-oscuro); }
+
+.ficha__accion { margin-top: 16px; }
+
+.boton-secundario {
+    min-height: 48px;
+    padding: 0 22px;
+    border: 2px solid var(--verde-oscuro);
+    border-radius: var(--radio-campo);
+    background: var(--blanco);
+    color: var(--verde-oscuro);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-secundario:hover { background: var(--verde-claro); }

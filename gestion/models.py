@@ -27,13 +27,20 @@ class Proyecto(models.Model):
     descripcion = models.TextField(blank=True)
     fecha_inicio = models.DateField(default=timezone.now)
     fecha_fin = models.DateField(blank=True, null=True)
-    abierto = models.BooleanField(default=True)
+    ESTADOS = [
+        ('PRO', 'En proceso'),
+        ('TER', 'Terminado'),
+    ]
+    estado = models.CharField(max_length=3, choices=ESTADOS, default='PRO')
     notion_id = models.CharField(max_length=100, unique=True, blank=True, null=True)
     tipo_destino = models.CharField(max_length=3, choices=TIPOS, blank=True)
     creado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
         null=True, blank=True, related_name='proyectos_creados'
     )
+
+    def esta_terminado(self):
+        return self.estado == 'TER'
 
     def __str__(self):
         return f"{self.nombre} ({self.get_tipo_display()})"

@@ -18,7 +18,9 @@
 
     <a class="categoria categoria--urgencia" href="{% url 'urgencias' %}">
         <h2 class="categoria__titulo">Urgencias</h2>
-        <div class="categoria__imagen"><span>Crear un trabajo nuevo</span></div>
+        <div class="categoria__imagen">
+            <img src="{% static 'img/categorias/urgencias.jpg' %}" alt="">
+        </div>
     </a>
 </div>
 {% endblock %}

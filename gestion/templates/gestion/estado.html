@@ -1,0 +1,3 @@
+<span class="estado {% if proyecto.esta_terminado %}estado--terminado{% else %}estado--proceso{% endif %}">
+    {{ proyecto.get_estado_display }}
+</span>

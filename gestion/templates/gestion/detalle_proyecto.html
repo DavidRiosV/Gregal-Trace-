@@ -1,0 +1,122 @@
+{% extends "gestion/principal.html" %}
+
+{% block titulo %}{{ proyecto.nombre }} · Gregal Trace{% endblock %}
+
+{% block contenido %}
+<section class="ficha">
+    <div class="ficha__cabecera">
+        <h1>{{ proyecto.nombre }}</h1>
+        {% include "gestion/estado.html" %}
+    </div>
+
+    <p class="ficha__datos">
+        {{ proyecto.get_tipo_display }}{% if proyecto.tipo == 'URG' and proyecto.tipo_destino %} · será {{ proyecto.get_tipo_destino_display|lower }}{% endif %}
+        · desde el {{ proyecto.fecha_inicio|date:"d/m/Y" }}
+        {% if proyecto.fecha_fin %} · terminado el {{ proyecto.fecha_fin|date:"d/m/Y" }}{% endif %}
+        {% if proyecto.creado_por %} · creado por {{ proyecto.creado_por.get_full_name|default:proyecto.creado_por.username }}{% endif %}
+    </p>
+
+    {% if proyecto.descripcion %}
+        <p class="ficha__descripcion">{{ proyecto.descripcion }}</p>
+    {% endif %}
+
+    {% if es_oficina %}
+        <form method="post" action="{% url 'cambiar_estado' proyecto.pk %}" class="ficha__accion">
+            {% csrf_token %}
+            {% if proyecto.esta_terminado %}
+                <button type="submit" class="boton-secundario">Volver a poner en proceso</button>
+            {% else %}
+                <button type="submit" class="boton-principal">Marcar como terminado</button>
+            {% endif %}
+        </form>
+
+        <div class="resumen">
+            <div class="resumen__dato">
+                <span>Coste total</span>
+                <strong>{{ coste_total|floatformat:2 }} €</strong>
+            </div>
+            <div class="resumen__dato">
+                <span>Apuntes</span>
+                <strong>{{ consumos|length }}</strong>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+{% if not proyecto.esta_terminado %}
+<section class="panel">
+    <h2>Apuntar material u horas</h2>
+    <form method="post" class="formulario formulario--consumo" novalidate>
+        {% csrf_token %}
+
+        <div class="campo">
+            <label for="{{ formulario.material.id_for_label }}">{{ formulario.material.label }}</label>
+            <div class="entrada{% if formulario.material.errors %} entrada--error{% endif %}">
+                {{ formulario.material }}
+            </div>
+            {% for error in formulario.material.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="campo">
+            <label for="{{ formulario.cantidad.id_for_label }}">{{ formulario.cantidad.label }}</label>
+            <div class="entrada{% if formulario.cantidad.errors %} entrada--error{% endif %}">
+                {{ formulario.cantidad }}
+            </div>
+            {% for error in formulario.cantidad.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="campo">
+            <label for="{{ formulario.fecha.id_for_label }}">{{ formulario.fecha.label }}</label>
+            <div class="entrada{% if formulario.fecha.errors %} entrada--error{% endif %}">
+                {{ formulario.fecha }}
+            </div>
+            {% for error in formulario.fecha.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+        </div>
+
+        <button type="submit" class="boton-principal campo--ancho">Añadir</button>
+    </form>
+</section>
+{% else %}
+    <p class="aviso aviso--info">Este proyecto está terminado: ya no se pueden añadir apuntes.</p>
+{% endif %}
+
+<section class="panel">
+    <h2>Apuntes del proyecto</h2>
+    {% if consumos %}
+        <div class="tabla-contenedor">
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Material</th>
+                        <th class="num">Cantidad</th>
+                        <th>Añadido por</th>
+                        {% if es_oficina %}<th class="num">Importe</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for consumo in consumos %}
+                        <tr>
+                            <td>{{ consumo.fecha|date:"d/m/Y" }}</td>
+                            <td>{{ consumo.material.nombre }}</td>
+                            <td class="num">{{ consumo.cantidad|floatformat:"-2" }} {{ consumo.material.get_unidad_display|lower }}</td>
+                            <td>{{ consumo.trabajador.get_full_name|default:consumo.trabajador.username }}</td>
+                            {% if es_oficina %}<td class="num">{{ consumo.total|floatformat:2 }} €</td>{% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="vacio">Todavía no hay apuntes en este proyecto.</p>
+    {% endif %}
+</section>
+
+<div class="acciones-pie">
+    {% if slug_volver %}
+        <a class="boton-volver" href="{% url url_volver slug_volver %}">← Volver a {{ texto_volver|lower }}</a>
+    {% else %}
+        <a class="boton-volver" href="{% url url_volver %}">← Volver a {{ texto_volver|lower }}</a>
+    {% endif %}
+</div>
+{% endblock %}

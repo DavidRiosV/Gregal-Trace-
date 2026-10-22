@@ -1,9 +1,13 @@
-from django.contrib import messages
-from django.db.models import Q
-from django.http import Http404
-from django.shortcuts import redirect, render
+from datetime import date
 
-from .forms import UrgenciaForm
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+from django.db.models import DecimalField, F, Q, Sum
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
+
+from .forms import ConsumoForm, UrgenciaForm
 from .models import Proyecto
 
 # Apartados de listado: traduce la palabra de la URL al código guardado en la base de datos.
@@ -24,7 +28,14 @@ def lista_proyectos(request, tipo):
         raise Http404('Tipo de proyecto no válido')
 
     datos_tipo = TIPOS[tipo]
-    proyectos = Proyecto.objects.filter(tipo=datos_tipo['codigo'], abierto=True).order_by('-fecha_inicio')
+    proyectos = Proyecto.objects.filter(tipo=datos_tipo['codigo']).order_by('-fecha_inicio', '-id')
+
+    # Filtro por estado: en proceso (por defecto), terminados o todos
+    estado = request.GET.get('estado', 'PRO')
+    if estado not in ('PRO', 'TER', 'todos'):
+        estado = 'PRO'
+    if estado != 'todos':
+        proyectos = proyectos.filter(estado=estado)
 
     busqueda = request.GET.get('q', '').strip()
     if busqueda:
@@ -35,7 +46,9 @@ def lista_proyectos(request, tipo):
     return render(request, 'gestion/lista_proyectos.html', {
         'proyectos': proyectos,
         'titulo': datos_tipo['titulo'],
+        'slug': tipo,
         'busqueda': busqueda,
+        'estado_actual': estado,
     })
 
 
@@ -56,9 +69,84 @@ def urgencias(request):
     else:
         formulario = UrgenciaForm()
 
-    abiertas = Proyecto.objects.filter(tipo='URG', abierto=True).select_related('creado_por').order_by('-fecha_inicio', '-id')
+    abiertas = Proyecto.objects.filter(tipo='URG', estado='PRO').select_related('creado_por').order_by('-fecha_inicio', '-id')
 
     return render(request, 'gestion/urgencias.html', {
         'formulario': formulario,
         'urgencias': abiertas,
     })
+
+
+def es_oficina(usuario):
+    """Oficina (y el superusuario) ven los precios; los operarios no."""
+    if usuario.is_superuser:
+        return True
+    perfil = getattr(usuario, 'perfil', None)
+    return perfil is not None and perfil.rol == 'OFI'
+
+
+def detalle_proyecto(request, pk):
+    proyecto = get_object_or_404(Proyecto.objects.select_related('creado_por'), pk=pk)
+
+    if request.method == 'POST' and not proyecto.esta_terminado():
+        formulario = ConsumoForm(request.POST)
+        if formulario.is_valid():
+            consumo = formulario.save(commit=False)
+            consumo.proyecto = proyecto
+            consumo.trabajador = request.user
+            consumo.precio_unitario = consumo.material.precio
+            consumo.save()
+            messages.success(
+                request,
+                f'Apuntado: {consumo.cantidad:g} {consumo.material.get_unidad_display().lower()} de {consumo.material.nombre}.'
+            )
+            return redirect('detalle_proyecto', pk=proyecto.pk)
+    else:
+        formulario = ConsumoForm()
+
+    consumos = proyecto.consumos.select_related('material', 'trabajador').order_by('-fecha', '-id')
+
+    # Página a la que vuelve el botón de volver
+    if proyecto.tipo == 'URG':
+        url_volver, texto_volver = 'urgencias', 'Urgencias'
+    else:
+        slug = next(s for s, datos in TIPOS.items() if datos['codigo'] == proyecto.tipo)
+        url_volver, texto_volver = 'lista_proyectos', TIPOS[slug]['titulo']
+
+    contexto = {
+        'proyecto': proyecto,
+        'formulario': formulario,
+        'consumos': consumos,
+        'es_oficina': es_oficina(request.user),
+        'url_volver': url_volver,
+        'slug_volver': None if proyecto.tipo == 'URG' else slug,
+        'texto_volver': texto_volver,
+    }
+
+    if contexto['es_oficina']:
+        total = consumos.aggregate(
+            total=Sum(F('cantidad') * F('precio_unitario'),
+                      output_field=DecimalField(max_digits=12, decimal_places=2))
+        )['total']
+        contexto['coste_total'] = total or 0
+
+    return render(request, 'gestion/detalle_proyecto.html', contexto)
+
+
+@require_POST
+def cambiar_estado(request, pk):
+    """Oficina marca un proyecto como terminado o lo vuelve a poner en proceso."""
+    if not es_oficina(request.user):
+        raise PermissionDenied('Solo Oficina puede cambiar el estado de un proyecto.')
+
+    proyecto = get_object_or_404(Proyecto, pk=pk)
+    if proyecto.esta_terminado():
+        proyecto.estado = 'PRO'
+        proyecto.fecha_fin = None
+        messages.success(request, f'«{proyecto.nombre}» vuelve a estar en proceso.')
+    else:
+        proyecto.estado = 'TER'
+        proyecto.fecha_fin = date.today()
+        messages.success(request, f'«{proyecto.nombre}» marcado como terminado.')
+    proyecto.save()
+    return redirect('detalle_proyecto', pk=proyecto.pk)

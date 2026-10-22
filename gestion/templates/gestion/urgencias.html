@@ -45,7 +45,7 @@
     <h2>Urgencias abiertas</h2>
     <div class="proyectos">
         {% for urgencia in urgencias %}
-            <div class="proyecto">
+            <a class="proyecto" href="{% url 'detalle_proyecto' urgencia.pk %}">
                 <div class="proyecto__contenido">
                     <h2 class="proyecto__titulo">{{ urgencia.nombre }}</h2>
                     <p class="proyecto__subtitulo">{{ urgencia.get_tipo_destino_display }}</p>
@@ -55,7 +55,7 @@
                         el {{ urgencia.fecha_inicio|date:"d/m/Y" }}
                     </p>
                 </div>
-            </div>
+            </a>
         {% empty %}
             <p class="vacio">No hay urgencias abiertas.</p>
         {% endfor %}
