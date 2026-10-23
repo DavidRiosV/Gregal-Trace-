@@ -1,53 +1,63 @@
 {% extends "gestion/principal.html" %}
+{% load static %}
 
 {% block titulo %}Iniciar sesión · Gregal Trace{% endblock %}
 
-{% block clase_body %}pagina-login{% endblock %}
+{% block clase_body %}pagina-acceso{% endblock %}
 
-{% block contenido %}
-<section class="tarjeta-login">
-    <div class="tarjeta-login__bienvenida">
-        <h1>Bienvenido</h1>
-        <p>Introduce tus datos para acceder a tu cuenta</p>
-    </div>
+{% block cuerpo %}
+<main class="acceso" id="contenido">
+    <section class="acceso__marca">
+        <img src="{% static 'img/logo.png' %}" alt="Logo de Instalaciones Gregal" width="72" height="72">
+        <h1>Gregal Trace</h1>
+        <p>El material y las horas de cada obra, intervención y mantenimiento, apuntados desde donde se trabaja.</p>
+    </section>
 
-    <form method="post" action="{% url 'login' %}" class="formulario">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}">
+    <section class="acceso__formulario">
+        <h2>Iniciar sesión</h2>
+        <p class="acceso__ayuda">Usa el usuario que te ha dado Oficina.</p>
 
-        {% if form.errors %}
-            <div class="error-formulario">Usuario o contraseña incorrectos.</div>
-        {% endif %}
+        <form method="post" action="{% url 'login' %}" class="formulario">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
 
-        <div class="campo">
-            <label for="id_username">Nombre de Usuario</label>
-            <div class="entrada">
-                <input type="text" name="username" id="id_username" placeholder="Pablo Perez"
-                       value="{{ form.username.value|default_if_none:'' }}"
-                       autocomplete="username" autofocus required>
+            {% if form.errors %}
+                <div class="error-formulario" role="alert">El usuario o la contraseña no son correctos. Revísalos y vuelve a intentarlo.</div>
+            {% endif %}
+
+            <div class="campo">
+                <label for="id_username">Usuario</label>
+                <div class="entrada">
+                    <input type="text" name="username" id="id_username" placeholder="Por ejemplo, pablo"
+                           value="{{ form.username.value|default_if_none:'' }}"
+                           autocomplete="username" autofocus required>
+                </div>
             </div>
-        </div>
 
-        <div class="campo">
-            <label for="id_password">Contraseña</label>
-            <div class="entrada">
-                <input type="password" name="password" id="id_password"
-                       placeholder="Introduce tu contraseña"
-                       autocomplete="current-password" required>
-                <button type="button" class="entrada__ojo" data-mostrar-contrasena="id_password"
-                        aria-label="Mostrar contraseña">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
+            <div class="campo">
+                <label for="id_password">Contraseña</label>
+                <div class="entrada">
+                    <input type="password" name="password" id="id_password"
+                           autocomplete="current-password" required>
+                    <button type="button" class="entrada__ojo" data-mostrar-contrasena="id_password" aria-label="Mostrar contraseña" aria-pressed="false">
+                        <svg class="icono-ojo icono-ojo--abierto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <svg class="icono-ojo icono-ojo--cerrado" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                            <path d="M1 1l22 22"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <button type="submit" class="boton-principal">Iniciar sesión</button>
-    </form>
-</section>
+            <button type="submit" class="boton boton--ancho">Entrar</button>
+        </form>
+    </section>
+</main>
 {% endblock %}
-
-{% block pie %}{% endblock %}

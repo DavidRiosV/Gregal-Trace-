@@ -3,66 +3,77 @@
 {% block titulo %}Urgencias · Gregal Trace{% endblock %}
 
 {% block contenido %}
-<h1 class="titulo-pantalla">Nueva urgencia</h1>
-<p class="subtitulo-pantalla">Para trabajos que aún no están dados de alta</p>
-
-<section class="panel">
-    <form method="post" class="formulario" novalidate>
-        {% csrf_token %}
-
-        <div class="campo">
-            <label for="{{ formulario.nombre.id_for_label }}">{{ formulario.nombre.label }}</label>
-            <div class="entrada{% if formulario.nombre.errors %} entrada--error{% endif %}">
-                <input type="text" name="{{ formulario.nombre.html_name }}" id="{{ formulario.nombre.id_for_label }}"
-                       value="{{ formulario.nombre.value|default_if_none:'' }}"
-                       maxlength="{{ formulario.nombre.field.max_length }}"
-                       placeholder="Ej.: Fuga en C/ Mayor 12" required>
-            </div>
-            {% for error in formulario.nombre.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+{% url 'index' as url_inicio %}
+<header class="pagina">
+    {% include "gestion/migas.html" with miga_actual="Urgencias" %}
+    <div class="pagina__fila">
+        <div>
+            <h1 class="pagina__titulo">Urgencias</h1>
+            <p class="pagina__texto">Abre aquí un trabajo que aún no está dado de alta. Oficina lo pasará a su tipo cuando se oficialice.</p>
         </div>
-
-        <div class="campo">
-            <label for="{{ formulario.tipo_destino.id_for_label }}">{{ formulario.tipo_destino.label }}</label>
-            <div class="entrada{% if formulario.tipo_destino.errors %} entrada--error{% endif %}">
-                {{ formulario.tipo_destino }}
-            </div>
-            {% for error in formulario.tipo_destino.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
-        </div>
-
-        <div class="campo">
-            <label for="{{ formulario.descripcion.id_for_label }}">{{ formulario.descripcion.label }}</label>
-            <div class="entrada">
-                <textarea name="{{ formulario.descripcion.html_name }}" id="{{ formulario.descripcion.id_for_label }}"
-                          rows="3" placeholder="Qué ha pasado y qué hay que hacer">{{ formulario.descripcion.value|default_if_none:'' }}</textarea>
-            </div>
-        </div>
-
-        <button type="submit" class="boton-principal">Crear urgencia</button>
-    </form>
-</section>
-
-<section class="panel">
-    <h2>Urgencias abiertas</h2>
-    <div class="proyectos">
-        {% for urgencia in urgencias %}
-            <a class="proyecto" href="{% url 'detalle_proyecto' urgencia.pk %}">
-                <div class="proyecto__contenido">
-                    <h2 class="proyecto__titulo">{{ urgencia.nombre }}</h2>
-                    <p class="proyecto__subtitulo">{{ urgencia.get_tipo_destino_display }}</p>
-                    <p class="proyecto__autor">
-                        Creada por
-                        <strong>{{ urgencia.creado_por.get_full_name|default:urgencia.creado_por.username|default:"usuario eliminado" }}</strong>
-                        el {{ urgencia.fecha_inicio|date:"d/m/Y" }}
-                    </p>
-                </div>
-            </a>
-        {% empty %}
-            <p class="vacio">No hay urgencias abiertas.</p>
-        {% endfor %}
     </div>
-</section>
+</header>
 
-<div class="acciones-pie">
-    <a class="boton-volver" href="{% url 'index' %}">← Volver al inicio</a>
+<div class="dos-columnas">
+    <section class="panel panel--destacado">
+        <h2 class="panel__titulo">Nueva urgencia</h2>
+        <form method="post" class="formulario" novalidate>
+            {% csrf_token %}
+
+            <div class="campo">
+                <label for="{{ formulario.nombre.id_for_label }}">{{ formulario.nombre.label }}</label>
+                <div class="entrada{% if formulario.nombre.errors %} entrada--error{% endif %}">
+                    <input type="text" name="{{ formulario.nombre.html_name }}" id="{{ formulario.nombre.id_for_label }}"
+                           value="{{ formulario.nombre.value|default_if_none:'' }}"
+                           maxlength="{{ formulario.nombre.field.max_length }}"
+                           placeholder="Ej.: Fuga en C/ Mayor 12" required>
+                </div>
+                {% for error in formulario.nombre.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="campo">
+                <label for="{{ formulario.tipo_destino.id_for_label }}">{{ formulario.tipo_destino.label }}</label>
+                <div class="entrada{% if formulario.tipo_destino.errors %} entrada--error{% endif %}">
+                    {{ formulario.tipo_destino }}
+                </div>
+                {% for error in formulario.tipo_destino.errors %}<p class="error-campo">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="campo">
+                <label for="{{ formulario.descripcion.id_for_label }}">{{ formulario.descripcion.label }}</label>
+                <div class="entrada">
+                    <textarea name="{{ formulario.descripcion.html_name }}" id="{{ formulario.descripcion.id_for_label }}"
+                              rows="4" placeholder="Qué ha pasado y qué hay que hacer">{{ formulario.descripcion.value|default_if_none:'' }}</textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="boton boton--urgencia">Crear urgencia</button>
+        </form>
+    </section>
+
+    <section class="panel panel--lista">
+        <h2 class="panel__titulo panel__titulo--con-margen">Abiertas <span class="panel__contador">{{ urgencias|length }}</span></h2>
+        <ul class="filas">
+            {% for urgencia in urgencias %}
+                <li>
+                    <a class="fila" href="{% url 'detalle_proyecto' urgencia.pk %}">
+                        <span class="fila__principal">
+                            <span class="fila__titulo">{{ urgencia.nombre }}</span>
+                            <span class="fila__meta">
+                                {{ urgencia.get_tipo_destino_display }}, abierta por
+                                {{ urgencia.creado_por.get_full_name|default:urgencia.creado_por.username|default:"un usuario eliminado" }}
+                                el {{ urgencia.fecha_inicio|date:"d/m/Y" }}
+                            </span>
+                        </span>
+                        <span class="fila__flecha">{% include "gestion/icono.html" with nombre="siguiente" %}</span>
+                    </a>
+                </li>
+            {% empty %}
+                <li class="vacio"><p>No hay urgencias abiertas.</p></li>
+            {% endfor %}
+        </ul>
+    </section>
 </div>
+
+{% include "gestion/volver.html" with volver_url=url_inicio volver_texto="Volver al inicio" %}
 {% endblock %}

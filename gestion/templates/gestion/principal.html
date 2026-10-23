@@ -4,31 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1E3B14">
     <title>{% block titulo %}Gregal Trace{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}?v=4">
 </head>
 <body class="{% block clase_body %}{% endblock %}">
-    {% include "gestion/cabecera.html" %}
+{% block cuerpo %}
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <div class="app">
+        {% include "gestion/menu.html" %}
 
-    <main class="contenido">
-        {% if messages %}
-            <ul class="avisos">
-                {% for message in messages %}
-                    <li class="aviso aviso--{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        <div class="app__zona">
+            {% include "gestion/cabecera.html" %}
 
-        {% block contenido %}{% endblock %}
-    </main>
+            <main class="contenido" id="contenido">
+                {% if messages %}
+                    <ul class="avisos">
+                        {% for message in messages %}
+                            <li class="aviso aviso--{{ message.tags }}" role="status">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
 
-    {% block pie %}
-        {% include "gestion/pie.html" %}
-    {% endblock %}
+                {% block contenido %}{% endblock %}
+            </main>
 
-    <script src="{% static 'js/main.js' %}"></script>
+            {% block pie %}{% include "gestion/pie.html" %}{% endblock %}
+        </div>
+    </div>
+
+    {% include "gestion/menu_movil.html" %}
+{% endblock %}
+    <script src="{% static 'js/main.js' %}?v=4"></script>
 </body>
 </html>

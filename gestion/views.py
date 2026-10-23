@@ -98,13 +98,14 @@ def detalle_proyecto(request, pk):
             consumo.save()
             messages.success(
                 request,
-                f'Apuntado: {consumo.cantidad:g} {consumo.material.get_unidad_display().lower()} de {consumo.material.nombre}.'
+                f'Apuntado: {consumo.cantidad:g} {consumo.material.abreviatura()} de {consumo.material.nombre}.'
             )
             return redirect('detalle_proyecto', pk=proyecto.pk)
     else:
         formulario = ConsumoForm()
 
     consumos = proyecto.consumos.select_related('material', 'trabajador').order_by('-fecha', '-id')
+    horas = consumos.filter(material__unidad='H').aggregate(total=Sum('cantidad'))['total'] or 0
 
     # Página a la que vuelve el botón de volver
     if proyecto.tipo == 'URG':
@@ -121,6 +122,9 @@ def detalle_proyecto(request, pk):
         'url_volver': url_volver,
         'slug_volver': None if proyecto.tipo == 'URG' else slug,
         'texto_volver': texto_volver,
+        'horas': horas,
+        # Marca en el menú el apartado al que pertenece el proyecto
+        'seccion': 'urgencias' if proyecto.tipo == 'URG' else slug,
     }
 
     if contexto['es_oficina']:

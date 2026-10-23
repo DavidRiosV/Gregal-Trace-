@@ -1,20 +1,16 @@
 {% load static %}
-<header class="cabecera">
-    <a class="cabecera__marca" href="{% url 'index' %}">
-        {% if not user.is_authenticated %}
-            <span class="cabecera__sub">Plataforma de acceso</span>
-        {% endif %}
-        <span class="cabecera__nombre">Gregal Trace</span>
+<header class="barra-superior">
+    <a class="barra-superior__marca" href="{% url 'index' %}">
+        <img src="{% static 'img/logo.png' %}" alt="" width="32" height="32">
+        <span>Gregal Trace</span>
     </a>
-
-    <div class="cabecera__derecha">
-        {% if user.is_authenticated %}
-            <span class="cabecera__usuario">{{ user.get_full_name|default:user.username }}</span>
-            <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="boton-salir">Salir</button>
-            </form>
-        {% endif %}
-        <img class="cabecera__logo" src="{% static 'img/logo.png' %}" alt="Logo de Gregal">
+    <div class="barra-superior__usuario">
+        <span class="avatar avatar--claro" aria-hidden="true">{{ user.first_name|default:user.username|slice:":1"|upper }}</span>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="boton-icono boton-icono--claro" aria-label="Cerrar sesión">
+                {% include "gestion/icono.html" with nombre="salir" %}
+            </button>
+        </form>
     </div>
 </header>

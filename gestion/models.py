@@ -59,6 +59,10 @@ class Material(models.Model):
     unidad = models.CharField(max_length=2, choices=UNIDADES, default='UD')
     precio = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def abreviatura(self):
+        """Unidad corta para mostrar junto a la cantidad: 2 h, 3 ud, 40 m."""
+        return {'UD': 'ud', 'M': 'm', 'M2': 'm²', 'KG': 'kg', 'L': 'l', 'H': 'h'}.get(self.unidad, self.unidad.lower())
+
     def __str__(self):
         return f"{self.nombre} ({self.get_unidad_display()})"
 

@@ -1,0 +1,45 @@
+{% load static %}
+<aside class="menu" aria-label="Menú principal">
+    <a class="menu__marca" href="{% url 'index' %}">
+        <img src="{% static 'img/logo.png' %}" alt="" width="40" height="40">
+        <span>Gregal Trace</span>
+    </a>
+
+    <a class="menu__urgencia" href="{% url 'urgencias' %}">
+        {% include "gestion/icono.html" with nombre="mas" %}
+        <span>Nueva urgencia</span>
+    </a>
+
+    <nav class="menu__lista">
+        <a class="menu__enlace{% if seccion == 'inicio' %} menu__enlace--activo{% endif %}" href="{% url 'index' %}"{% if seccion == 'inicio' %} aria-current="page"{% endif %}>
+            {% include "gestion/icono.html" with nombre="inicio" %}
+            <span>Inicio</span>
+        </a>
+        {% for slug, tipo in nav_tipos.items %}
+            <a class="menu__enlace{% if seccion == slug %} menu__enlace--activo{% endif %}" href="{% url 'lista_proyectos' slug %}"{% if seccion == slug %} aria-current="page"{% endif %}>
+                {% include "gestion/icono.html" with nombre=slug %}
+                <span>{{ tipo.titulo }}</span>
+                {% if tipo.en_proceso %}<span class="menu__contador" title="En proceso">{{ tipo.en_proceso }}</span>{% endif %}
+            </a>
+        {% endfor %}
+        <a class="menu__enlace{% if seccion == 'urgencias' %} menu__enlace--activo{% endif %}" href="{% url 'urgencias' %}"{% if seccion == 'urgencias' %} aria-current="page"{% endif %}>
+            {% include "gestion/icono.html" with nombre="urgencias" %}
+            <span>Urgencias</span>
+            {% if nav_urgencias %}<span class="menu__contador menu__contador--aviso" title="Abiertas">{{ nav_urgencias }}</span>{% endif %}
+        </a>
+    </nav>
+
+    <div class="menu__usuario">
+        <span class="avatar" aria-hidden="true">{{ user.first_name|default:user.username|slice:":1"|upper }}</span>
+        <span class="menu__persona">
+            <strong>{{ user.get_full_name|default:user.username }}</strong>
+            <span>{% if usuario_oficina %}Oficina{% else %}Operario{% endif %}</span>
+        </span>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="boton-icono" aria-label="Cerrar sesión" title="Cerrar sesión">
+                {% include "gestion/icono.html" with nombre="salir" %}
+            </button>
+        </form>
+    </div>
+</aside>

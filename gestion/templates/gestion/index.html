@@ -4,23 +4,40 @@
 {% block titulo %}Inicio · Gregal Trace{% endblock %}
 
 {% block contenido %}
-<h1 class="titulo-pantalla">Hola, {{ user.first_name|default:user.username }}</h1>
+<header class="pagina">
+    <div class="pagina__fila">
+        <div>
+            <h1 class="pagina__titulo">Hola, {{ user.first_name|default:user.username }}</h1>
+            <p class="pagina__texto">Elige dónde vas a apuntar hoy el material y las horas.</p>
+        </div>
+    </div>
+</header>
 
-<div class="categorias">
-    {% for slug, tipo in tipos.items %}
-        <a class="categoria" href="{% url 'lista_proyectos' slug %}">
-            <h2 class="categoria__titulo">{{ tipo.titulo }}</h2>
-            <div class="categoria__imagen">
-                <img src="{% static tipo.imagen %}" alt="">
-            </div>
+<div class="tipos">
+    {% for slug, tipo in nav_tipos.items %}
+        <a class="tipo" href="{% url 'lista_proyectos' slug %}">
+            <img class="tipo__foto" src="{% static tipo.imagen %}" alt="" loading="lazy">
+            <span class="tipo__cuerpo">
+                <span class="tipo__icono">{% include "gestion/icono.html" with nombre=slug %}</span>
+                <span class="tipo__titulo">{{ tipo.titulo }}</span>
+                <span class="tipo__datos">
+                    <span><strong>{{ tipo.en_proceso }}</strong> en proceso</span>
+                    <span><strong>{{ tipo.terminados }}</strong> terminados</span>
+                </span>
+            </span>
         </a>
     {% endfor %}
 
-    <a class="categoria categoria--urgencia" href="{% url 'urgencias' %}">
-        <h2 class="categoria__titulo">Urgencias</h2>
-        <div class="categoria__imagen">
-            <img src="{% static 'img/categorias/urgencias.jpg' %}" alt="">
-        </div>
+    <a class="tipo tipo--urgencia" href="{% url 'urgencias' %}">
+        <img class="tipo__foto" src="{% static 'img/categorias/urgencias.jpg' %}" alt="" loading="lazy">
+        <span class="tipo__cuerpo">
+            <span class="tipo__icono">{% include "gestion/icono.html" with nombre="urgencias" %}</span>
+            <span class="tipo__titulo">Urgencias</span>
+            <span class="tipo__datos">
+                <span><strong>{{ nav_urgencias }}</strong> abiertas</span>
+                <span>Abre un trabajo que aún no está dado de alta</span>
+            </span>
+        </span>
     </a>
 </div>
 {% endblock %}

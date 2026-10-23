@@ -1,0 +1,17 @@
+<nav class="pestanas" aria-label="Menú">
+    <a class="pestana{% if seccion == 'inicio' %} pestana--activa{% endif %}" href="{% url 'index' %}">
+        {% include "gestion/icono.html" with nombre="inicio" %}<span>Inicio</span>
+    </a>
+    <a class="pestana{% if seccion == 'obras' %} pestana--activa{% endif %}" href="{% url 'lista_proyectos' 'obras' %}">
+        {% include "gestion/icono.html" with nombre="obras" %}<span>Obras</span>
+    </a>
+    <a class="pestana pestana--urgencia{% if seccion == 'urgencias' %} pestana--activa{% endif %}" href="{% url 'urgencias' %}" aria-label="Urgencias">
+        <span class="pestana__circulo">{% include "gestion/icono.html" with nombre="mas" %}</span><span>Urgencia</span>
+    </a>
+    <a class="pestana{% if seccion == 'intervenciones' %} pestana--activa{% endif %}" href="{% url 'lista_proyectos' 'intervenciones' %}">
+        {% include "gestion/icono.html" with nombre="intervenciones" %}<span>Interv.</span>
+    </a>
+    <a class="pestana{% if seccion == 'mantenimientos' %} pestana--activa{% endif %}" href="{% url 'lista_proyectos' 'mantenimientos' %}">
+        {% include "gestion/icono.html" with nombre="mantenimientos" %}<span>Mant.</span>
+    </a>
+</nav>

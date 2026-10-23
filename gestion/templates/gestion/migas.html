@@ -1,0 +1,5 @@
+<nav class="migas" aria-label="Estás en">
+    <a href="{% url 'index' %}">Inicio</a>
+    {% if miga_url %}<span class="migas__sep" aria-hidden="true">/</span><a href="{{ miga_url }}">{{ miga_texto }}</a>{% endif %}
+    <span class="migas__actual"><span class="migas__sep" aria-hidden="true">/</span><span aria-current="page">{{ miga_actual }}</span></span>
+</nav>
